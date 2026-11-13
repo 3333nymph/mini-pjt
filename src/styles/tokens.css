@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light;
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
+  /* app scale, 1.2 from a 16px body */
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.2rem; --text-xl: 1.44rem; --text-2xl: 1.728rem; --text-3xl: 2.074rem;
+  --text-display-s: 1.44rem; --text-display: 2.074rem; --text-section: 1.44rem; --text-title: 1.2rem; --text-lead: 1rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
+  --color-error: oklch(50% 0.18 27); --color-success: oklch(48% 0.12 150);
+  --container: 1440px; --gutter: 64px; --gap-columns: 32px; --section-gap-s: 120px; --section-gap: 144px; --section-gap-l: 176px;
+  --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
+
+  /* the sheet (paper), the manila folder it sits in (paper-2, paper-3) */
+  --color-paper: oklch(96% 0.016 88); --color-paper-2: oklch(87% 0.055 80); --color-paper-3: oklch(80% 0.065 76);
+  /* typewriter ribbon */
+  --color-ink: oklch(23% 0.014 60); --color-ink-2: oklch(34% 0.016 60); --color-muted: oklch(46% 0.02 70);
+  --color-rule: oklch(74% 0.03 78);
+  /* stamp-pad red: the primary action and the stamps, nothing else */
+  --color-accent: oklch(50% 0.18 27); --color-accent-ink: oklch(97% 0.012 88); --color-accent-deep: oklch(42% 0.16 27);
+  /* ballpoint blue: the circled choice, the handwritten note, the focus ring */
+  --color-accent-2: oklch(43% 0.13 262); --color-accent-2-ink: oklch(97% 0.012 88); --color-focus: oklch(43% 0.13 262);
+  /* the sticky note and the tape over the photo */
+  --color-note: oklch(94% 0.09 98); --color-tape: oklch(93% 0.05 95 / 0.72);
+  --shadow-sheet: 0 1px 0 oklch(70% 0.04 78), 0 18px 40px -22px oklch(30% 0.04 70 / 0.55);
+  --shadow-photo: 0 6px 14px -8px oklch(30% 0.04 70 / 0.6);
+  --texture-opacity: 0.045;
+
+  --font-display: "Special Elite", "Nanum Myeongjo", ui-serif, serif;
+  --font-body: "Courier Prime", "Nanum Gothic Coding", ui-monospace, monospace;
+  --font-outlier: "Nanum Pen Script", cursive;
+  --display-weight: 800;
+  --radius-card: 2px; --radius-pill: 999px; --rule-hair: 1px; --rule-bar: 3px;
+  --shadow-card: var(--shadow-sheet);
+  --tracking-display: 0;
+}

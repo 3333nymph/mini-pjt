@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+.claude/
+.archify/
+.hallmark/
+# 평가 결과는 보고서가 근거로 쓰는 것만 포함 (1차 · 2차 · 2차 이후 추가 확인)
+evaluation/results/*
+!evaluation/results/20261113-105335.json
+!evaluation/results/20261113-111735.json
+!evaluation/results/20261113-114129.json

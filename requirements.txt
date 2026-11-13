@@ -1,0 +1,14 @@
+# Python 3.12 · 2026-11-13 실행 확인 버전 기준
+streamlit>=1.67,<2          # st.components.v2 · 1.67 위젯 구조(data-testid)에 맞춘 CSS 사용
+fastapi>=0.110
+uvicorn>=0.30
+langchain>=1.4,<2           # create_agent · AgentMiddleware · ToolStrategy
+langchain-core>=1.7,<2
+langchain-aws>=1.9,<2       # ChatBedrockConverse
+langgraph>=1.2,<2
+langchain-mcp-adapters>=0.3,<0.4
+mcp>=1.10,<2                # 2.x 는 langchain-mcp-adapters 미지원
+pydantic>=2.7,<3
+python-dotenv>=1.0
+boto3>=1.35
+langsmith>=0.4              # 트레이스 (LANGSMITH_TRACING)

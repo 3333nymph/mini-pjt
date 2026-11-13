@@ -1,0 +1,11 @@
+# Streamlit 기본 위젯 색을 기밀 문서 토큰(src/styles/tokens.css)의 hex 근사값에 맞춤
+[theme]
+base = "light"
+primaryColor = "#254c96"            # --color-accent-2 (볼펜 파랑: 선택·체크박스)
+backgroundColor = "#e8d1ac"         # --color-paper-2 (마닐라 서류철)
+secondaryBackgroundColor = "#f6f1e6" # --color-paper (서류 종이)
+textColor = "#221b16"               # --color-ink
+baseRadius = "small"
+
+[client]
+toolbarMode = "minimal"

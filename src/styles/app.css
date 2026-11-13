@@ -1,0 +1,173 @@
+/* Hallmark · shape: app screen · genre: playful · theme: custom (by request: the user pinned manila paper and a red stamp) · redesign: restyle · idea: "you are the case officer typing up a classified file clipped into a manila folder, and the last page is the dossier you open" · vibe: "a typed case file, stamped red, circled in biro"
+ * paper: oklch(96% 0.016 88) on a manila folder oklch(87% 0.055 80) · accent: oklch(50% 0.18 27) stamp red, oklch(43% 0.13 262) ballpoint blue · display: Special Elite + Nanum Myeongjo · body: Courier Prime + Nanum Gothic Coding · outlier: Nanum Pen Script (the spy's note only)
+ * nav: kept (Streamlit shell, one column) · signature: the opened dossier, a TOP SECRET stamp, a taped-in photo and a handwritten note · states: loading (st.status), refused, covered, full
+ * axes: light/mono/warm · posture: two-ink, red for the primary action and stamps, blue for the circled choice and focus · contrast: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P3 H3 E3 S3 R3 V2 · weakest: V, the typewriter Latin face has no Hangul, so Korean heads fall to Nanum Myeongjo 800 and Korean body to Nanum Gothic Coding; both are set at sizes where the pair reads as one typed sheet */
+/* Hallmark · waive 65 · the user picked this look by name (manila paper, red TOP SECRET stamp) · the display is a typewriter face, not a high-contrast serif, and the red is held to stamps and the one primary action */
+/* Hallmark · waive 47c · the user asked for stamps, tape and a typed sheet · each is flat CSS (no bevel, no clip-path), and the only photo-like object is the real generated avatar */
+/* ── the folder and the sheet ───────────────────────────────── */
+:root { --measure: 46rem; }
+[data-testid="stApp"] { background: var(--color-paper-2); color: var(--color-ink); font-synthesis: none; }
+[data-testid="stHeader"] { background: transparent; }
+[data-testid="stMainBlockContainer"] {
+  max-width: var(--measure); margin-block: var(--space-xl) var(--space-2xl);
+  padding: var(--space-xl) var(--space-xl) var(--space-2xl);
+  background: var(--color-paper); box-shadow: var(--shadow-sheet); border-radius: var(--radius-card);
+}
+@media (max-width: 40rem) {
+  [data-testid="stMainBlockContainer"] { margin-block: var(--space-md) var(--space-xl); padding: var(--space-lg) var(--space-md) var(--space-xl); }
+}
+[data-testid="stApp"] :where(p, li, label, input, textarea, button, summary, td, th) { font-family: var(--font-body); }
+
+/* ── type ───────────────────────────────────────────────────── */
+[data-testid="stApp"] [data-testid="stHeading"] :is(h1, h2, h3) {
+  font-family: var(--font-display); font-weight: var(--display-weight); letter-spacing: var(--tracking-display);
+  line-height: 1.15; color: var(--color-ink); padding: 0; max-width: none; text-wrap: balance;
+}
+[data-testid="stApp"] [data-testid="stHeading"] h1 { font-size: var(--text-3xl); }
+[data-testid="stApp"] [data-testid="stHeading"] h2 { font-size: var(--text-2xl); }
+[data-testid="stApp"] [data-testid="stHeading"] h3 { font-size: var(--text-xl); }
+[data-testid="stApp"] [data-testid="stCaptionContainer"] p { font-size: var(--text-md); color: var(--color-ink-2); }
+[data-testid="stApp"] [data-testid="stWidgetLabel"] p { font-family: var(--font-body); font-weight: 700; font-size: var(--text-sm); color: var(--color-ink); }
+
+/* the masthead: the file's title, a double typed rule, and the one page stamp */
+.st-key-masthead { position: relative; padding-bottom: var(--space-lg); border-bottom: var(--rule-bar) double var(--color-ink); }
+.st-key-masthead [data-testid="stHeading"] { padding-right: var(--space-4xl); }
+.st-key-masthead::after {
+  content: "TOP SECRET"; position: absolute; top: var(--space-2xs); right: 0; pointer-events: none;
+  padding: var(--space-2xs) var(--space-sm); font: 400 var(--text-lg)/1.1 var(--font-display); color: var(--color-accent);
+  box-shadow: inset 0 0 0 2px var(--color-accent), inset 0 0 0 4px var(--color-paper), inset 0 0 0 5px var(--color-accent);
+  transform: rotate(-7deg); opacity: 0.88;
+}
+@media (max-width: 40rem) {
+  .st-key-masthead [data-testid="stHeading"] { padding-right: 0; padding-top: var(--space-xl); }
+}
+
+/* ── the survey: one typed question per screen ──────────────── */
+[data-testid="stForm"] { border: 0; border-radius: 0; padding: 0; background: transparent; }
+.survey-top { display: flex; align-items: center; gap: var(--space-md); margin-top: var(--space-lg); }
+.survey-track { flex: 1; display: flex; gap: var(--space-2xs); min-width: 0; }
+.survey-track i { flex: 1; height: 4px; background: var(--color-rule); transform-origin: left center; }
+.survey-track i.on { background: var(--color-ink); }
+.survey-track i.now { background: var(--color-accent); animation: survey-grow var(--dur-long) var(--ease-out) both; }
+[data-testid="stApp"] .survey-count { margin: 0; font-size: var(--text-sm); color: var(--color-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* each question is a fresh container, so it slides in from the side it came from */
+[class*="st-key-step-"] { min-height: 15rem; padding-top: var(--space-lg); }
+[class*="st-key-step-"][class*="-fwd"] { animation: step-from-right 420ms var(--ease-out) both; }
+[class*="st-key-step-"][class*="-back"] { animation: step-from-left 420ms var(--ease-out) both; }
+.step-no { font: 400 var(--text-3xl)/1 var(--font-display); font-variant-numeric: tabular-nums; color: var(--color-ink); }
+.step-q { margin-top: var(--space-xs); font: var(--display-weight) var(--text-2xl)/1.25 var(--font-display); color: var(--color-ink);
+  max-width: 24ch; text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+[class*="st-key-step-"] .step-q { margin-bottom: var(--space-md); }
+/* bigger choices on a one-question screen, dealt onto the sheet one after another */
+[class*="st-key-step-"] [data-testid="stRadioOption"] { min-height: 48px; padding: var(--space-xs) var(--space-md); }
+[class*="st-key-step-"] [data-testid="stRadioOption"] p { font-size: var(--text-md); }
+[class*="st-key-step-"] [data-testid="stRadioGroup"] > * { animation: deal 360ms var(--ease-out) backwards; }
+[class*="st-key-step-"] [data-testid="stRadioGroup"] > :nth-child(2) { animation-delay: 60ms; }
+[class*="st-key-step-"] [data-testid="stRadioGroup"] > :nth-child(3) { animation-delay: 120ms; }
+[class*="st-key-step-"] [data-testid="stRadioGroup"] > :nth-child(4) { animation-delay: 180ms; }
+[class*="st-key-step-"] [data-testid="stRadioGroup"] > :nth-child(5) { animation-delay: 240ms; }
+[class*="st-key-step-"] [data-testid="stRadioGroup"] > :nth-child(n+6) { animation-delay: 300ms; }
+[class*="st-key-step-"] [data-testid="stTextInputField"] { font-size: var(--text-lg); min-height: 48px; }
+
+@keyframes survey-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes step-from-right { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+@keyframes step-from-left { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
+@keyframes deal { from { opacity: 0; transform: translateY(10px) rotate(-1deg); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  [class*="st-key-step-"], [class*="st-key-step-"] [data-testid="stRadioGroup"] > *, .survey-track i.now { animation: none; }
+}
+
+/* radios: a typed checkbox per option; the chosen one is ticked and circled in biro */
+/* Streamlit 1.67 draws radios with react-aria: stRadioGroup > stRadioOption (label, data-selected) > [circle, text] */
+[data-testid="stRadioGroup"] { display: flex; flex-wrap: wrap; gap: var(--space-2xs) var(--space-sm); }
+[data-testid="stApp"] [data-testid="stRadioOption"] {
+  margin: 0; padding: var(--space-xs) var(--space-sm); min-height: 40px; display: inline-flex; align-items: center; gap: var(--space-xs);
+  border-radius: 50%; background: transparent; cursor: pointer;
+  transition: background-color var(--dur-micro) var(--ease-out), box-shadow var(--dur-micro) var(--ease-out);
+}
+[data-testid="stApp"] [data-testid="stRadioOption"]::before {
+  content: ""; flex: none; width: 0.9em; height: 0.9em; box-shadow: inset 0 0 0 1.5px var(--color-ink); background: transparent;
+}
+[data-testid="stApp"] [data-testid="stRadioOption"] > div > div:first-child:not([data-testid]) { display: none; }
+[data-testid="stApp"] [data-testid="stRadioOption"] > div { gap: 0; }
+[data-testid="stApp"] [data-testid="stRadioOption"] p { font-size: var(--text-sm); font-weight: 400; color: var(--color-ink); margin: 0; }
+[data-testid="stApp"] [data-testid="stRadioOption"][data-hovered] { background: color-mix(in oklab, var(--color-paper-2) 45%, transparent); }
+[data-testid="stApp"] [data-testid="stRadioOption"]:is([data-selected], :has(input:checked)) {
+  box-shadow: inset 0 0 0 2px var(--color-accent-2); transform: rotate(-1.5deg);
+}
+[data-testid="stApp"] [data-testid="stRadioOption"]:is([data-selected], :has(input:checked))::before {
+  background: var(--color-accent-2); box-shadow: inset 0 0 0 1.5px var(--color-accent-2), inset 0 0 0 3.5px var(--color-paper);
+}
+[data-testid="stApp"] [data-testid="stRadioOption"]:is([data-selected], :has(input:checked)) p { color: var(--color-accent-2); font-weight: 700; }
+[data-testid="stApp"] [data-testid="stRadioOption"][data-focus-visible] { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* options with a one-line story under them: each is a typed index card; the whole card is the hit area */
+[data-testid="stRadioGroup"]:has([data-testid="stRadioCaption"]) { display: grid; gap: var(--space-xs); width: 100%; }
+[data-testid="stRadioGroup"] > :has(> [data-testid="stRadioCaption"]) {
+  position: relative; padding: var(--space-sm) var(--space-md); border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--color-rule); transition: box-shadow var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out);
+}
+[data-testid="stRadioGroup"] > :has(> [data-testid="stRadioCaption"]):hover { background: color-mix(in oklab, var(--color-paper-2) 35%, transparent); }
+[data-testid="stApp"] [data-testid="stRadioGroup"] > :has(> [data-testid="stRadioCaption"]) > [data-testid="stRadioOption"] {
+  position: static; min-height: 0; padding: 0; border-radius: 0; box-shadow: none; transform: none; background: transparent;
+}
+/* stretch the label's hit area over the caption too */
+[data-testid="stRadioGroup"] > :has(> [data-testid="stRadioCaption"]) > [data-testid="stRadioOption"]::after { content: ""; position: absolute; inset: 0; }
+[data-testid="stApp"] [data-testid="stRadioGroup"] > :has(> [data-testid="stRadioCaption"]) [data-testid="stRadioOption"] p {
+  font: 700 var(--text-lg)/1.3 var(--font-body); }
+[data-testid="stApp"] [data-testid="stRadioCaption"] { padding-left: calc(0.9em + var(--space-xs)); margin-top: var(--space-2xs); }
+[data-testid="stApp"] [data-testid="stRadioCaption"] p { font-size: var(--text-sm); line-height: 1.55; color: var(--color-ink-2); word-break: keep-all; }
+[data-testid="stRadioGroup"] > :has(> [data-testid="stRadioOption"]:is([data-selected], :has(input:checked))):has(> [data-testid="stRadioCaption"]) {
+  box-shadow: inset 0 0 0 2px var(--color-accent-2); transform: rotate(-0.6deg);
+}
+
+/* text inputs: a typed blank, a dotted line to write on */
+[data-testid="stApp"] [data-testid="stTextInputRootElement"] {
+  border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  border-bottom: 2px dotted var(--color-ink);
+}
+[data-testid="stApp"] [data-testid="stTextInputRootElement"]:focus-within { border-bottom-style: solid; border-bottom-color: var(--color-accent-2); outline: 2px solid var(--color-focus); outline-offset: 2px; }
+[data-testid="stApp"] [data-testid="stTextInputRootElement"] > div { background: transparent; border-radius: 0; }
+[data-testid="stApp"] [data-testid="stTextInputField"] { min-height: 40px; color: var(--color-ink); background: transparent; padding-inline: var(--space-2xs); }
+[data-testid="stApp"] [data-testid="stTextInputField"]::placeholder { color: var(--color-muted); opacity: 1; }
+[data-testid="stCheckbox"] p { font-size: var(--text-sm); font-weight: 700; }
+
+/* ── controls: the stamp and the plain key ──────────────────── */
+[data-testid="stApp"] button:is([data-testid="stBaseButton-primary"], [data-testid="stBaseButton-primaryFormSubmit"], [data-testid="stBaseButton-secondary"], [data-testid="stBaseButton-secondaryFormSubmit"]) {
+  border-radius: var(--radius-card); border: 0; min-height: 44px; padding: var(--space-sm) var(--space-lg);
+  transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+}
+[data-testid="stApp"] button:is([data-testid^="stBaseButton"]) p { font-family: var(--font-body); font-weight: 700; font-size: var(--text-md); }
+/* primary: an inked stamp, double ruled, filling red on hover */
+[data-testid="stApp"] button:is([data-testid="stBaseButton-primary"], [data-testid="stBaseButton-primaryFormSubmit"]) {
+  background: transparent; color: var(--color-accent);
+  box-shadow: inset 0 0 0 2px var(--color-accent), inset 0 0 0 4px var(--color-paper), inset 0 0 0 5px var(--color-accent);
+}
+[data-testid="stApp"] button:is([data-testid="stBaseButton-primary"], [data-testid="stBaseButton-primaryFormSubmit"]) p { font-family: var(--font-display); font-weight: var(--display-weight); font-size: var(--text-lg); }
+[data-testid="stApp"] button:is([data-testid="stBaseButton-primary"], [data-testid="stBaseButton-primaryFormSubmit"]):hover { background: var(--color-accent); color: var(--color-accent-ink); }
+[data-testid="stApp"] button:is([data-testid="stBaseButton-primary"], [data-testid="stBaseButton-primaryFormSubmit"]):active { background: var(--color-accent-deep); color: var(--color-accent-ink); }
+[data-testid="stApp"] button:is([data-testid="stBaseButton-secondary"], [data-testid="stBaseButton-secondaryFormSubmit"]) {
+  background: transparent; color: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-ink);
+}
+[data-testid="stApp"] button:is([data-testid="stBaseButton-secondary"], [data-testid="stBaseButton-secondaryFormSubmit"]):hover { background: color-mix(in oklab, var(--color-paper-2) 50%, var(--color-paper)); }
+[data-testid="stApp"] button:is([data-testid="stBaseButton-secondary"], [data-testid="stBaseButton-secondaryFormSubmit"]):active { background: var(--color-paper-2); }
+[data-testid="stApp"] button[data-testid^="stBaseButton"]:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+[data-testid="stApp"] button[data-testid^="stBaseButton"]:disabled { opacity: 0.55; cursor: not-allowed; }
+[data-testid="stDownloadButton"] button { border-radius: var(--radius-card); }
+
+/* ── interrogation: two numbered questions on the typed sheet ─ */
+[class*="st-key-interro-"] { border-top: var(--rule-hair) solid var(--color-ink); padding-top: var(--space-sm); margin-top: var(--space-lg); }
+.interro-no { font: 400 var(--text-3xl)/1 var(--font-display); font-variant-numeric: tabular-nums; color: var(--color-ink); }
+.interro-q { font: var(--display-weight) var(--text-lg)/1.45 var(--font-display); margin-top: var(--space-xs); max-width: 40ch; }
+
+
+/* ── notices: flat, typed ───────────────────────────────────── */
+[data-testid="stAlert"] > div { border-radius: var(--radius-card); }
+[data-testid="stExpander"] details { border-radius: var(--radius-card); border-color: var(--color-rule); background: transparent; }
+[data-testid="stStatusWidget"], [data-testid="stExpander"] summary p { font-family: var(--font-body); }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-testid="stApp"] [data-testid="stRadioOption"] { transition: none; }
+}
