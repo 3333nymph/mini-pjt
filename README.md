@@ -122,6 +122,9 @@ curl -X POST localhost:8000/query -H "Content-Type: application/json" \
 # 4. 인-아웃 세트 실행 (LLM-as-Judge 채점 포함) → evaluation/results/<시각>.json
 ./run.sh eval        # 전체
 ./run.sh eval 1 9 19 # 일부 케이스
+
+# 5. 단위 테스트 (LLM · 네트워크 없이 약 1초)
+./run.sh test        # = python -m pytest -q tests
 ```
 
 - MCP 질문 서버(`src/mcp_server.py`)는 그래프가 stdio 하위 프로세스로 자동 실행하므로 따로 띄울 필요가 없다.
@@ -145,6 +148,16 @@ curl -X POST localhost:8000/query -H "Content-Type: application/json" \
 
 - **개선폭: +3건 (75% → 90%, +15%p)**. 평가 세트 #15 기대값 정정을 1차에도 적용하면 16 → 18건(+10%p). 활동 속 장소 인식(#4 · #7 · #14)과 기대값 정정(#15)으로 통과했고, #17은 출력 가드레일 차단으로 새로 실패했다. 완성 기준(전체 90% 이상 · guardrail 100%)을 충족했다.
 - 상세: [1차 보고서](evaluation/round1_report.md) · [2차 보고서](evaluation/round2_report.md) (2차 이후 추가 개선과 확인 결과는 2차 보고서 부록)
+- 서비스 지표 실측(2차): 응답 반영도 95%(기대 특성 59개 중 56개), 실행 오류 0건, 최종 발언의 환각 소품 0건(훅이 1건 잡아 다시 생성), 반박 표현 0건, "임무 중" 결론 0건. 표는 [SERVICE.md](SERVICE.md) §5.
+
+## 단위 테스트
+`tests/test_core.py` 37개. 인-아웃 세트가 LLM-as-Judge로 "결과가 기대대로 나오나"를 본다면, 단위 테스트는 그 결과를 떠받치는 코드 규칙이 깨지지 않았는지 LLM 없이 확인한다 (LLM은 가짜 객체로 바꿔 끼움).
+- 가드레일: 전화번호 · 이메일 가림, 인젝션 문장만 빼기, 아바타에 없는 소품 찾기(나비넥타이 ≠ 넥타이 오탐 없음)
+- 도구: 출몰 DB 가장 길게 맞는 키워드("스터디카페" ≠ "카페"), 모르는 장소는 기본 행, 패션 DB 취향 · 성별
+- 스키마 보정: 반려동물 미응답 ≠ "없음", 단서 1개 · 나이 · 궁합 범위
+- 그래프: supervisor 분기 9가지, 전문가 → 팀장 고리, 팀장이 같은 전문가를 다시 고르면 보정, 세 명이 답하면 판결
+- 출력 가드레일 다시 쓰기: 팀장 메모는 두고 전문가 발언만 다듬기, 다듬은 뒤 통과 / 그래도 걸리면 공개 안 함
+- API 답변 · 화면: 팀장 메모 비공개, 무작위 성별 표시, 카드 한 장에 3문장까지
 
 ## 트라이앤에러 회고
 
@@ -211,6 +224,8 @@ curl -X POST localhost:8000/query -H "Content-Type: application/json" \
   - `supervisor` 큰 단계 코드 분기 · `guard_input` 입력 가드레일 · `parse_survey` 설문 추출 · `gen_questions` 맞춤 질문 생성 · `ask_questions` 맞춤 질문 interrupt
   - `moderator` 색출 팀장(LLM Supervisor) · `_investigate` 팀장의 ReAct 조사(find_spot · find_look) · `profiler` · `stylist`(환각 차단) · `situational_expert` 전문가 노드
   - `_make_story` 팀장의 판결문 작성 · `guard_output` 출력 가드레일(`_soften_minutes`로 전문가 발언까지 다듬기) · `approve` 열람 승인 interrupt · `run_query` API용
+- `src/prompts.py` — LLM 지시문 모음 (설문 추출 · 맞춤 질문 · 전문가 공통 규칙 `TEAM_RULE` · 전문가 3명 · 색출 팀장 · 판결문 · 발언 다듬기). 그래프 코드와 분리해 말투 · 규칙만 고칠 때는 이 파일만 본다.
+- `tests/test_core.py` — 단위 테스트 37개 (LLM 없이)
 - `src/tools.py` — `find_spot`(스파이 출몰 DB · 가장 길게 맞는 키워드의 장소) · `find_look`(패션 DB) · `build_avatar` 아바타 조립
 - `src/guardrails.py` — 개인정보 가림 · 인젝션 제거 · 입력/출력 LLM 판정 · 환각 차단 미들웨어
 - `src/llm.py` — 모델 선택(`get_llm`: main · debate · talk · fast)과 하루 한도에 걸렸을 때 자동 대체

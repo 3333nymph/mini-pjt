@@ -79,6 +79,8 @@ mini-pjt_{본인이름}/
 ### 이 프로젝트에 적용할 때
 - `src/agent.py`: LangGraph 그래프 (큰 단계는 코드 supervisor, 색출 회의는 사회자 LLM Supervisor ↔ 전문가 3명 노드 고리, 사회자가 ReAct로 두 DB 조사 · 판결문까지 작성, 가드레일, 열람 승인 interrupt)
 - `src/tools.py`: `find_spot`(스파이 출몰 DB), `find_look`(패션 DB)
+- `src/prompts.py`: LLM 지시문 모음 (agent.py 에서 분리). 프롬프트 문구는 여기서 고친다.
+- `tests/test_core.py`: 단위 테스트 (LLM은 가짜 객체, `./run.sh test`). 분기·가드레일·도구·보정 로직을 바꾸면 같이 고친다.
 - `src/` 기타: Streamlit 화면, 아바타(avatar), 카드(card), 토론 대화 화면(debate_view: 전문가가 한두 문장씩 말풍선으로 말하고 "다음"으로 넘김, st.components.v2 · 판결 장면의 판결 이유 바로 아래에 열람 결정 패널), 카드 넘기기 화면(card_view: 신상 아래에서 기록을 카드 한 장씩, 진행 막대·이전/다음, 마지막 장은 설렘 경고 도장), 시작 화면(intro_view: 봉인 로고·"기밀" 도장·타자 제목 애니메이션 후 "스파이 색출 시작" 버튼으로 설문 시작), MCP 질문 서버
 - `src/retriever.py`: 현재 설계는 RAG를 쓰지 않는다. RAG를 추가할 때만 만든다.
 - `data/`: 공통 질문, 출몰 DB, 패션 DB (모두 직접 작성한 가상 데이터)
